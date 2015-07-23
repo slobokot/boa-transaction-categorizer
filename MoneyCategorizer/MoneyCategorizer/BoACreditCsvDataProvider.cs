@@ -20,11 +20,15 @@ namespace MoneyCategorizer
         public IEnumerable<Transaction> GetTransactions()
         {
             var result = new List<Transaction>();
+            var lines = File.ReadAllLines(fileName);
 
-            foreach (var line in File.ReadAllLines(fileName).Skip(1))
+            if (!lines[0].Equals("Posted Date,Reference Number,Payee,Address,Amount"))
+                throw new Exception(fileName);
+
+            foreach (var line in lines.Skip(1))
             {
                 var s = new Sequencer(line);
-
+                "Posted Date,Reference Number,Payee,Address,Amount"
                 var transaction = new Transaction();
                 transaction.Date = DateTime.ParseExact(s.GetNext(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
                 s.GetNext();

@@ -21,7 +21,7 @@ namespace MoneyCategorizer
 
                 foreach(var file in Directory.EnumerateFiles(args[0]))
                 {
-                    var dataProvider = dataProviderFactory.GetDataProvider(file);
+                    var dataProvider = dataProviderFactory.GetDataProvider(file);                    
                     transactions.AddRange(dataProvider.GetTransactions()); 
                 }
 
@@ -37,15 +37,12 @@ namespace MoneyCategorizer
 
         static void Print(IEnumerable<CategorizedTransaction> categorized)
         {
-            foreach (var category in categorized)            
-            {
-                Console.WriteLine(category.Category + "," + category.Amount);
-                foreach (var t in category.Transactions)
-                    Console.WriteLine($"\t{t.Description} , {t.Amount}");
-            }
-            
-            Console.WriteLine();
+            PrintDetailed(categorized);
+            PrintSummary(categorized);
+        }
 
+        private static void PrintSummary(IEnumerable<CategorizedTransaction> categorized)
+        {
             var total = 0.0;
             foreach (var category in categorized)
             {
@@ -53,9 +50,18 @@ namespace MoneyCategorizer
                 if (category.Category != Category.Income)
                     total += category.Amount;
             }
-
-            Console.WriteLine();
             Console.WriteLine($"Total spending,{total}");
+        }
+
+        private static void PrintDetailed(IEnumerable<CategorizedTransaction> categorized)
+        {
+            foreach (var category in categorized)
+            {
+                Console.WriteLine(category.Category + "," + category.Amount);
+                foreach (var t in category.Transactions)
+                    Console.WriteLine($"\t{t.Description} , {t.Amount}");
+            }
+
             Console.WriteLine();
         }
     }
