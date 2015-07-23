@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MoneyCategorizer
+{
+    class CategorizedTransaction
+    {
+        public Category Category { get; set; }
+        public List<Transaction> Transactions { get; set; }
+        public double Amount
+        {
+            get { return Transactions.Sum(x => x.Amount); }
+        }
+    }
+}
