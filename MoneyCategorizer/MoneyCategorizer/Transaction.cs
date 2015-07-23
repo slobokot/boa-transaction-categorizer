@@ -11,7 +11,6 @@ namespace MoneyCategorizer
     {
         public DateTime Date { get; set; }
         public string Description { get; set; }
-        public string Place { get; set; }
         public double Amount { get; set; }
     }
 }

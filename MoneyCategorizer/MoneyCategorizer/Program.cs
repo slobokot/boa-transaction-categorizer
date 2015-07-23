@@ -10,59 +10,33 @@ namespace MoneyCategorizer
     class Program
     {
         static void Main(string[] args)
-        {
-            var dataProviderFactory = new DataProviderFactory();
-            var categorizer = new Categorizer();
-
+        {                       
             FileAttributes attr = File.GetAttributes(args[0]);
             if(attr.HasFlag(FileAttributes.Directory))
             {
                 List<Transaction> transactions = new List<Transaction>();
 
-                foreach(var file in Directory.EnumerateFiles(args[0]))
+                var dataProviderFactory = new TransactionProviderFactory();
+                foreach (var file in Directory.EnumerateFiles(args[0]))
                 {
-                    var dataProvider = dataProviderFactory.GetDataProvider(file);                    
+                    var lines = File.ReadAllLines(file);
+                    var dataProvider = dataProviderFactory.GetTransactionProvider(lines);  
                     transactions.AddRange(dataProvider.GetTransactions()); 
                 }
 
-                var categorized  = categorizer.Categorize(
-                    (from t in transactions 
-                    where t.Date >= new DateTime(2015, 07, 01)
-                    select t).ToArray()
-                    );
+                var filteredTransactions = from t in transactions
+                                            where t.Date >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01)
+                                            select t;
 
-                Print(categorized);
+                var categorizer = new Categorizer();
+                var categorized  = categorizer.Categorize(filteredTransactions);
+
+                Reporter.Report(categorized);
             }
-        }
-
-        static void Print(IEnumerable<CategorizedTransaction> categorized)
-        {
-            PrintDetailed(categorized);
-            PrintSummary(categorized);
-        }
-
-        private static void PrintSummary(IEnumerable<CategorizedTransaction> categorized)
-        {
-            var total = 0.0;
-            foreach (var category in categorized)
+            else
             {
-                Console.WriteLine($"{category.Category}, {category.Amount}");
-                if (category.Category != Category.Income)
-                    total += category.Amount;
+                throw new NotImplementedException();
             }
-            Console.WriteLine($"Total spending,{total}");
-        }
-
-        private static void PrintDetailed(IEnumerable<CategorizedTransaction> categorized)
-        {
-            foreach (var category in categorized)
-            {
-                Console.WriteLine(category.Category + "," + category.Amount);
-                foreach (var t in category.Transactions)
-                    Console.WriteLine($"\t{t.Description} , {t.Amount}");
-            }
-
-            Console.WriteLine();
         }
     }
 }

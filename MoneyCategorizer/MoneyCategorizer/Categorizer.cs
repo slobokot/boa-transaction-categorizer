@@ -48,7 +48,7 @@ namespace MoneyCategorizer
 
         public IEnumerable<CategorizedTransaction> Categorize(IEnumerable<Transaction> transactions)
         {
-            var aggregate = new Dictionary<Category, List<Transaction>>();
+            var aggregate = new Dictionary<Category, CategorizedTransaction>();
             foreach (var transaction in transactions)
             {                
                 var category = GetCategory(transaction);
@@ -56,12 +56,12 @@ namespace MoneyCategorizer
                     continue;
 
                 if (!aggregate.ContainsKey(category))                
-                    aggregate.Add(category, new List<Transaction>());
+                    aggregate.Add(category, new CategorizedTransaction { Category = category });
 
-                aggregate[category].Add(transaction);
+                aggregate[category].Transactions.Add(transaction);
             }
 
-            return from x in aggregate select new CategorizedTransaction { Category = x.Key, Transactions = x.Value };
+            return aggregate.Values;
         }
 
         private Category GetCategory(Transaction transaction)

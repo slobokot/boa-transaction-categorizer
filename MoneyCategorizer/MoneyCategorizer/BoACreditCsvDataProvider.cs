@@ -8,37 +8,36 @@ using System.Threading.Tasks;
 
 namespace MoneyCategorizer
 {
-    class BoACreditCsvDataProvider : IDataProvider
+    class BoACreditCsvDataProvider : ITransactionProvider
     {
-        string fileName;
+        string[] lines;
 
-        public BoACreditCsvDataProvider(string fileName)
+        public BoACreditCsvDataProvider(string[] lines)
         {
-            this.fileName = fileName;
+            this.lines = lines;
         }
 
         public IEnumerable<Transaction> GetTransactions()
         {
             var result = new List<Transaction>();
-            var lines = File.ReadAllLines(fileName);
-
+            
             if (!lines[0].Equals("Posted Date,Reference Number,Payee,Address,Amount"))
-                throw new Exception(fileName);
+                throw new Exception("First line doesn't look as expected to be");
+
+            var csvParser = new CsvLineParser();
 
             foreach (var line in lines.Skip(1))
             {
-                var s = new Sequencer(line);
-                "Posted Date,Reference Number,Payee,Address,Amount"
+                var s = csvParser.Parse(line);
+                
                 var transaction = new Transaction();
-                transaction.Date = DateTime.ParseExact(s.GetNext(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
-                s.GetNext();
-                transaction.Description = s.GetNext().Trim('"');
-                transaction.Place = s.GetNext().Trim('"');
-                transaction.Amount = double.Parse(s.GetNext());
-                result.Add(transaction);
+                transaction.Date = DateTime.ParseExact(s[0], "MM/dd/yyyy", CultureInfo.InvariantCulture);                
+                transaction.Description = s[2];                
+                transaction.Amount = double.Parse(s[4]);
+                yield return transaction;
             }
 
-            return result;
+            yield break;
         }
     }
 }

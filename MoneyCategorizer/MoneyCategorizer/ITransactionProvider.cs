@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MoneyCategorizer
 {
-    interface IDataProvider
+    interface ITransactionProvider
     {
         IEnumerable<Transaction> GetTransactions();
     }

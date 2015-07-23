@@ -9,7 +9,8 @@ namespace MoneyCategorizer
     class CategorizedTransaction
     {
         public Category Category { get; set; }
-        public List<Transaction> Transactions { get; set; }
+        public List<Transaction> Transactions { get; } = new List<Transaction>();
+
         public double Amount
         {
             get { return Transactions.Sum(x => x.Amount); }
