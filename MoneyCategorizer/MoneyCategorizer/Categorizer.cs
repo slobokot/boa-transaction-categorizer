@@ -3,78 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using Newtonsoft.Json;
 
 namespace MoneyCategorizer
 {
     class Categorizer
     {
-        Dictionary<string, Category> categories = new Dictionary<string, Category> () { 
-            ["KROGER"] = Category.Food,
-            ["WAL-MART"] = Category.Food,
-            ["WM SUPERCENTER"] = Category.Food ,
-            ["KHANS MONGOLIAN GRILL"] = Category.Food,
-            ["PUBLIX"] = Category.Food ,
-            ["THE GREEK TOUCH NASHVILLE"] =Category.Food,
-            ["ALEKSEYS MARKET NASHVILLE TN"] =Category.Food,
-            
-            ["WALGREENS"] = Category.Health,
-            
-            ["SHELL OIL"] = Category.Gas,
-            ["EXXONMOBIL"] = Category.Gas,
-            
-            ["ADVANCE AUTO PARTS"] = Category.Car,
-            
-            ["MCDONALD'S"] = Category.Restaurant,
-            ["RED LOBSTER"] = Category.Restaurant,
-            ["STEAK HOUSE"] = Category.Restaurant,
-            ["LOGANS"] = Category.Restaurant,
-            
-            ["GYMBOREE"] = Category.Baby,
-            
-            ["TARGET"] = Category.HouseImprovement,
-            
-            ["Arbors of Brentw"] = Category.Apartment,
-            ["APPLIANCE WAREHOU"] = Category.Apartment,
-            ["CRICKET WIRELESS"] = Category.Apartment,
-            ["COMCAST OF NASHVILLE"] = Category.Apartment ,
-            ["RENT INS PROPCAS"] = Category.Apartment,
-            
-            ["Online payment from CHK"] = Category.Exclude,
-            ["Beginning balance as of"] = Category.Exclude,
-            ["Online Banking payment to CRD 2868 Confirmation#"] = Category.Exclude,
-            
-            ["PRIMEPOINT LLC DES:PAYROLL ID"] = Category.Income
-        };
+        // category -> list of templates
+        Dictionary<string, List<string>> categories = new Dictionary<string, List<string>>();
+
+        public Categorizer()
+        {            
+            categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(Properties.Resources.Categories);            
+        }
 
         public IEnumerable<CategorizedTransaction> Categorize(IEnumerable<Transaction> transactions)
-        {
-            var aggregate = new Dictionary<Category, CategorizedTransaction>();
+        {            
+            var aggregate = new Dictionary<string, CategorizedTransaction>();
             foreach (var transaction in transactions)
             {                
                 var category = GetCategory(transaction);
-                if (category == Category.Exclude)
+                if (category.Equals(WellKnownCategories.Exclude, StringComparison.InvariantCultureIgnoreCase))
                     continue;
 
-                if (!aggregate.ContainsKey(category))                
+                if (!aggregate.ContainsKey(category))          
                     aggregate.Add(category, new CategorizedTransaction { Category = category });
 
                 aggregate[category].Transactions.Add(transaction);
             }
 
+            foreach(var transaction in aggregate.Values)            
+                transaction.Transactions.Sort((x, y) => x.Date.CompareTo(y.Date));
+            
             return aggregate.Values;
         }
 
-        private Category GetCategory(Transaction transaction)
+        private string GetCategory(Transaction transaction)
         {
-            foreach(var category in categories)
+            foreach(var categoryList in categories)
             {
-                if (transaction.Description.ToLower().Contains(category.Key.ToLower()))
+                foreach(var categoryTemplate in categoryList.Value)
+                if (transaction.Description.ToLower().Contains(categoryTemplate.ToLower()))
                 {
-                    return category.Value;
+                    return categoryList.Key;
                 }
             }
 
-            return Category.Unknown;
+            return WellKnownCategories.Unknown;
         }
     }
 }

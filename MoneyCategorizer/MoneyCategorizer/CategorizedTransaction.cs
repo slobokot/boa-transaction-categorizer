@@ -8,7 +8,7 @@ namespace MoneyCategorizer
 {
     class CategorizedTransaction
     {
-        public Category Category { get; set; }
+        public string Category { get; set; }
         public List<Transaction> Transactions { get; } = new List<Transaction>();
 
         public double Amount
