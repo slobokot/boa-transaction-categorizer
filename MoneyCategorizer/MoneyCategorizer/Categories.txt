@@ -6,7 +6,8 @@
 		"KHANS MONGOLIAN GRILL",
 		"PUBLIX",
 		"THE GREEK TOUCH NASHVILLE",
-		"ALEKSEYS MARKET NASHVILLE TN"],
+		"ALEKSEYS MARKET NASHVILLE TN",
+		"WHOLEFDS GHL"],
 	"Health" : [
 		"WALGREENS"],
 	"Gas" : [
@@ -14,13 +15,15 @@
 		"EXXONMOBIL"],
 	"Car" : [
 		"ADVANCE AUTO PARTS",
-		"FBC PARKING"],
+		"FBC PARKING",
+		"TITAN INSURANCE "],
 	"Restaurant" : [
 	    "MCDONALD'S",
         "RED LOBSTER",
         "STEAK HOUSE",
         "LOGANS",
-		"BELLAGIO PIZZA"],
+		"BELLAGIO PIZZA",
+		"DeSano Pizza Bakery"],
 	"Baby" : [
 		"GYMBOREE"],
 	"HouseImprovement" : [
@@ -37,6 +40,7 @@
         "Beginning balance as of",
         "Online Banking payment to CRD 2868 Confirmation#" ],
 	"Income" : [
-		"PRIMEPOINT LLC DES:PAYROLL ID"
+		"PRIMEPOINT LLC DES:PAYROLL ID",
+		"CASHREWARD ID"
 	]                       
 }

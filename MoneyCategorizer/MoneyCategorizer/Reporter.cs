@@ -9,10 +9,10 @@ namespace MoneyCategorizer
 {
     class Reporter
     {
-        public static void Report(IEnumerable<CategorizedTransaction> categorized)
+        public static void Report(IEnumerable<CategorizedTransaction> categorized, int month)
         {
             var sorted = from c in categorized orderby c.Category select c;
-            using (var sw = new StreamWriter("output.txt"))
+            using (var sw = new StreamWriter("output_" + month + ".txt"))
             {
                 PrintDetailed(sorted, sw);
                 PrintSummary(sorted, sw);
@@ -21,14 +21,19 @@ namespace MoneyCategorizer
 
         private static void PrintSummary(IEnumerable<CategorizedTransaction> categorized, TextWriter sw)
         {
-            var total = 0.0;
+            var totalSpending = 0.0;
+            var totalIncome = 0.0;
             foreach (var category in categorized)
             {
-                sw.WriteLine($"{category.Category}, {category.Amount}");                
+                sw.WriteLine($"{category.Category}, {category.Amount}");
                 if (category.Category != WellKnownCategories.Income)
-                    total += category.Amount;
+                    totalSpending += category.Amount;
+                else
+                    totalIncome += category.Amount;
             }
-            sw.WriteLine($"Total spending,{total}");
+            sw.WriteLine();
+            sw.WriteLine($"Total spending, {totalSpending}");
+            sw.WriteLine($"Total saving, {totalIncome+totalSpending}");
         }
 
         private static void PrintDetailed(IEnumerable<CategorizedTransaction> categorized, TextWriter sw)
