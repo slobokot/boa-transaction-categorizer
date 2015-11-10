@@ -13,12 +13,12 @@ namespace MoneyCategorizer
         {
             try
             {
-                string directory = args[0];
+                var directory = args.Length > 0 ? args[0] : ".";
                 var monthes = new List<int>();
                 if (args.Length == 2)
                     monthes.Add(int.Parse(args[1]));
                 else
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 4; i++)
                         monthes.Add(DateTime.Now.Month - i);
 
                 foreach (var month in monthes)
@@ -38,7 +38,7 @@ namespace MoneyCategorizer
                 List<Transaction> transactions = new List<Transaction>();
 
                 var dataProviderFactory = new TransactionProviderFactory();
-                foreach (var file in Directory.EnumerateFiles(directory))
+                foreach (var file in Directory.EnumerateFiles(directory, "*.csv"))
                 {
                     var lines = File.ReadAllLines(file);
                     var dataProvider = dataProviderFactory.GetTransactionProvider(lines);  

@@ -7,23 +7,41 @@
 		"PUBLIX",
 		"THE GREEK TOUCH NASHVILLE",
 		"ALEKSEYS MARKET NASHVILLE TN",
-		"WHOLEFDS GHL"],
+		"WHOLEFDS GHL",
+		"COSTCO WHSE",
+		"K & S WORLD MARKET"],
 	"Health" : [
-		"WALGREENS"],
+		"WALGREENS", 
+		"DOWNTOWN DENTAL ",
+		"VUMC ",
+		"FAMILY DENTAL ",
+		"VMG PATIENT COLLECTIONS"],
 	"Gas" : [
 		"SHELL OIL",
-		"EXXONMOBIL"],
+		"EXXONMOBIL",
+		"MAPCO "],
 	"Car" : [
 		"ADVANCE AUTO PARTS",
 		"FBC PARKING",
-		"TITAN INSURANCE "],
+		"TITAN INSURANCE ",
+		"AUTOZONE",
+		"PARKING",
+		"FIRESTONE" ],
+    "Clothes" : [
+		"DILLARD'S",
+		"NORDSTROM ",
+		"TJMAXX ",
+
+	],
 	"Restaurant" : [
 	    "MCDONALD'S",
         "RED LOBSTER",
         "STEAK HOUSE",
         "LOGANS",
 		"BELLAGIO PIZZA",
-		"DeSano Pizza Bakery"],
+		"DeSano Pizza Bakery",
+		"SUBWAY ",
+		"STARBUCKS "],
 	"Baby" : [
 		"GYMBOREE"],
 	"HouseImprovement" : [
