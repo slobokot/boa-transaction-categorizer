@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MoneyCategorizer
 {
-    interface ITransactionProvider
+    class Period
     {
-        IEnumerable<Transaction> GetTransactions();
-        IEnumerable<string> GetBodyWithoutHeader();
+        public int Year { get; set; }
+        public int Month { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace MoneyCategorizer
 {
@@ -14,8 +15,12 @@ namespace MoneyCategorizer
         Dictionary<string, List<string>> categories = new Dictionary<string, List<string>>();
 
         public Categorizer()
-        {            
-            categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(Properties.Resources.Categories);            
+        {
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase), "Categories.json").Replace("file:\\","");
+            if (File.Exists(path))
+                categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(path));
+            else     
+                categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(Properties.Resources.Categories);
         }
 
         public IEnumerable<CategorizedTransaction> Categorize(IEnumerable<Transaction> transactions)

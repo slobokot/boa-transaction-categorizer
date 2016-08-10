@@ -14,45 +14,55 @@ namespace MoneyCategorizer
             try
             {
                 var directory = args.Length > 0 ? args[0] : ".";
-                var monthes = new List<int>();
-                if (args.Length == 2)
-                    monthes.Add(int.Parse(args[1]));
-                else
-                    for (int i = 0; i < 4; i++)
-                        monthes.Add(DateTime.Now.Month - i);
+                var periods = new List<Period>();
 
-                foreach (var month in monthes)
+                var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                for (int i = 0; i < 6; i++)
+                {
+                    periods.Add(new Period { Year = now.Year, Month = now.Month });
+                    now = now.AddMonths(-1);
+                }
+
+                foreach (var month in periods)
                     Run(directory, month);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
+                Environment.Exit(1);
             }
         }
 
-        static void Run(string directory, int month)
+        static void Run(string directory, Period period)
         {            
-            FileAttributes attr = File.GetAttributes(directory);
-            if(attr.HasFlag(FileAttributes.Directory))
+            if (File.GetAttributes(directory).HasFlag(FileAttributes.Directory))
             {
-                List<Transaction> transactions = new List<Transaction>();
+                var transactions = new List<Transaction>();
 
+                var checkUniqueness = new HashSet<string>();
                 var dataProviderFactory = new TransactionProviderFactory();
                 foreach (var file in Directory.EnumerateFiles(directory, "*.csv"))
                 {
                     var lines = File.ReadAllLines(file);
-                    var dataProvider = dataProviderFactory.GetTransactionProvider(lines);  
-                    transactions.AddRange(dataProvider.GetTransactions()); 
+                    var dataProvider = dataProviderFactory.GetTransactionProvider(lines);
+                    foreach (var line in dataProvider.GetBodyWithoutHeader())
+                    {
+                        if (checkUniqueness.Contains(line))
+                        {
+                            throw new Exception($"{file} has duplicate line {line}");
+                        }
+                        checkUniqueness.Add(line);
+                    }                    
+
+                    transactions.AddRange(dataProvider.GetTransactions());
                 }
 
-                var filteredTransactions = Filter(transactions, DateTime.Now.Year, month);
-                if (filteredTransactions.Count() == 0)                
-                    filteredTransactions = Filter(transactions, DateTime.Now.Year - 1, month);
-                
-                var categorizer = new Categorizer();
-                var categorized  = categorizer.Categorize(filteredTransactions);
+                var filteredTransactions = Filter(transactions, period);
 
-                Reporter.Report(categorized, month);
+                var categorizer = new Categorizer();
+                var categorized = categorizer.Categorize(filteredTransactions);
+
+                Reporter.Report(categorized, period);
             }
             else
             {
@@ -60,12 +70,12 @@ namespace MoneyCategorizer
             }
         }
 
-        static IEnumerable<Transaction> Filter(IEnumerable<Transaction> transactions, int year, int month)
+        static IEnumerable<Transaction> Filter(IEnumerable<Transaction> transactions, Period period)
         {
-            var beginOfMonth = new DateTime(year, month, 01);
-            var endOfMonth = new DateTime(year, month, 01).AddMonths(1);
+            var beginOfMonth = new DateTime(period.Year, period.Month, 01);
+            var endOfMonth = new DateTime(period.Year, period.Month, 01).AddMonths(1);
             return from t in transactions
-                   where (t.Date >= beginOfMonth && t.Date < endOfMonth)
+                   where (beginOfMonth <= t.Date && t.Date < endOfMonth)
                    select t;
         }
     }

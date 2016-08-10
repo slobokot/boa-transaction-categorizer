@@ -1,0 +1,82 @@
+{
+    "Food" : [
+        "KROGER",
+        "WAL-MART",
+        "WM SUPERCENTER",
+        "KHANS MONGOLIAN GRILL",
+        "PUBLIX",
+        "THE GREEK TOUCH NASHVILLE",
+        "ALEKSEYS MARKET NASHVILLE TN",
+        "WHOLEFDS GHL",
+        "COSTCO WHSE",
+        "K & S WORLD MARKET",
+        "BUY UKRAINIAN",
+		"FEED GROCERY"],
+    "Health" : [
+        "WALGREENS", 
+        "DOWNTOWN DENTAL",
+        "VUMC ",
+        "FAMILY DENTAL",
+        "VMG PATIENT COLLECTIONS",
+        "PHARMACY",
+		"UROLOGY ASSOCIATES",
+		" YMCA "
+		"SOUTHERN HILLS MEDIC"],
+    "Gas" : [
+        "SHELL OIL",
+        "EXXONMOBIL",
+        "MAPCO ",
+        "MAPCO-EXPRESS "],
+    "Car" : [
+        "ADVANCE AUTO PARTS",
+        "FBC PARKING",
+        "TITAN INSURANCE ",
+        "AUTOZONE",
+        "PARKING",
+        "FIRESTONE",
+		"NTB ",
+		"EMMISION REGISTRATION"],
+    "Clothes" : [
+        "DILLARD'S",
+        "NORDSTROM ",
+        "TJMAXX ",
+        "ANTHROPOLOGIE"        
+    ],
+    "Restaurant" : [
+        "MCDONALD'S",
+        "RED LOBSTER",
+        "STEAK HOUSE",
+        "LOGANS",
+        "BELLAGIO PIZZA",
+        "DeSano Pizza Bakery",
+        "SUBWAY ",
+        "STARBUCKS ",
+		"DOUBLETREE NASHVILLE F ANNASHVILLE",
+		"CHICK-FIL-A",
+		"FIVE POINTS PIZZA",
+		"CHILI'S BRENTWOOD BRENTWOOD",
+		"ANOTHER BROKEN EGG"],
+    "Baby" : [
+        "GYMBOREE"],
+    "HouseImprovement" : [
+        "TARGET"],                     
+    "Apartment" : [
+        "Arbors of Brentw",
+        "APPLIANCE WAREHOU",
+        "CRICKET WIRELESS",
+        "COMCAST" ,
+        "RENT INS PROPCAS",
+        "NASHVILLE ELECT DES:ONLINE PMT ID"],
+    "Exclude" : [
+        "Online payment from CHK",
+        "Beginning balance as of",
+        "Online Banking payment to CRD 2868 Confirmation#",
+		"Online Banking payment to CRD 9071 Confirmation#",
+		"Online Banking payment to CRD 0192 Confirmation#"
+		],
+    "Income" : [
+        "PRIMEPOINT LLC DES:PAYROLL ID",
+        "CASHREWARD ID",
+		"IRS TREAS 310 DES: TAX REF ID"
+    ]                       
+}

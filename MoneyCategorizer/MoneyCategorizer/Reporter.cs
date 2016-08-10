@@ -9,10 +9,10 @@ namespace MoneyCategorizer
 {
     class Reporter
     {
-        public static void Report(IEnumerable<CategorizedTransaction> categorized, int month)
+        public static void Report(IEnumerable<CategorizedTransaction> categorized, Period period)
         {
             var sorted = from c in categorized orderby c.Category select c;
-            using (var sw = new StreamWriter("output_" + month + ".txt"))
+            using (var sw = new StreamWriter($"output_{period.Year}_{period.Month}.txt"))
             {
                 PrintDetailed(sorted, sw);
                 PrintSummary(sorted, sw);

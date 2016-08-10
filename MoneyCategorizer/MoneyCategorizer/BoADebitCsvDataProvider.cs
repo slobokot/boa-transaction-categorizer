@@ -17,6 +17,11 @@ namespace MoneyCategorizer
             this.lines = lines;
         }
 
+        public IEnumerable<string> GetBodyWithoutHeader()
+        {
+            return lines.Skip(8);
+        }
+
         public IEnumerable<Transaction> GetTransactions()
         {                       
             if (!lines[0].Equals("Description,,Summary Amt.") ||
@@ -28,7 +33,7 @@ namespace MoneyCategorizer
             var result = new List<Transaction>();
             var csvParser = new CsvLineParser();
 
-            foreach (var line in lines.Skip(8))
+            foreach (var line in GetBodyWithoutHeader())
             {                                                   
                 var parsed = csvParser.Parse(line);
                 

@@ -17,6 +17,11 @@ namespace MoneyCategorizer
             this.lines = lines;
         }
 
+        public IEnumerable<string> GetBodyWithoutHeader()
+        {
+            return lines.Skip(1);
+        }
+
         public IEnumerable<Transaction> GetTransactions()
         {
             var result = new List<Transaction>();
@@ -26,7 +31,7 @@ namespace MoneyCategorizer
 
             var csvParser = new CsvLineParser();
 
-            foreach (var line in lines.Skip(1))
+            foreach (var line in GetBodyWithoutHeader())
             {
                 var s = csvParser.Parse(line);
                 
