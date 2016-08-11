@@ -49,7 +49,10 @@
     <Compile Include="BoACreditCsvDataProvider.cs" />
     <Compile Include="CategorizedTransaction.cs" />
     <Compile Include="Categorizer.cs" />
+    <Compile Include="ChaseCreditCsvDataProvider.cs" />
     <Compile Include="CsvLineParser.cs" />
+    <Compile Include="DataProviderExtensions.cs" />
+    <Compile Include="FileContentUniqueness.cs" />
     <Compile Include="Period.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -57,7 +60,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Reporter.cs" />
-    <Compile Include="TransactionProviderFactory.cs" />
     <Compile Include="ITransactionProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

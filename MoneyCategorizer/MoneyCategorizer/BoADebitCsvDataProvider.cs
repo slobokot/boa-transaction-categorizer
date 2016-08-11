@@ -10,37 +10,35 @@ namespace MoneyCategorizer
 {
     class BoADebitCsvDataProvider : ITransactionProvider
     {
-        string[] lines;
+        readonly string transactionStart = "Date,Description,Amount,Running Bal.";
 
-        public BoADebitCsvDataProvider(string[] lines)
+        public bool FormatSupported(string fileContent)
         {
-            this.lines = lines;
+            return fileContent.StartsWith("Description,,Summary Amt.") &&
+                fileContent.Contains(transactionStart);
         }
 
-        public IEnumerable<string> GetBodyWithoutHeader()
+        public IEnumerable<Transaction> GetTransactions(string fileContent)
         {
-            return lines.Skip(8);
-        }
-
-        public IEnumerable<Transaction> GetTransactions()
-        {                       
-            if (!lines[0].Equals("Description,,Summary Amt.") ||
-                !lines[6].Equals("Date,Description,Amount,Running Bal.") ||
-                !lines[7].Contains("Beginning balance as of"))
-
-                throw new Exception("Line 0 or 6 or 7 is not what I expect");
-            
-            var result = new List<Transaction>();
+            DataProviderExtensions.CheckFormatSupported(this, fileContent);
+            var lines = DataProviderExtensions.SplitStringIntoLines(fileContent.Substring(fileContent.IndexOf(transactionStart)));
             var csvParser = new CsvLineParser();
 
-            foreach (var line in GetBodyWithoutHeader())
-            {                                                   
+            foreach (var line in lines.Skip(1))
+            {
                 var parsed = csvParser.Parse(line);
-                
-                var transaction = new Transaction();
-                transaction.Date = DateTime.ParseExact(parsed[0], "MM/dd/yyyy", CultureInfo.InvariantCulture);
-                transaction.Description = parsed[1];                                
-                transaction.Amount = double.Parse(parsed[2]);
+
+                if (parsed[1].StartsWith("Beginning balance as of "))
+                {
+                    continue;
+                }
+
+                var transaction = new Transaction
+                {
+                    Date = DateTime.ParseExact(parsed[0], "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    Description = parsed[1],
+                    Amount = double.Parse(parsed[2])
+                };
                 yield return transaction;
             }
 

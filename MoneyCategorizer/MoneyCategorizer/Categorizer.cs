@@ -17,10 +17,11 @@ namespace MoneyCategorizer
         public Categorizer()
         {
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase), "Categories.json").Replace("file:\\","");
-            if (File.Exists(path))
-                categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(path));
-            else     
-                categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(Properties.Resources.Categories);
+            if (!File.Exists(path))
+            {
+                throw new Exception($"File {path} does not exist");
+            }
+            categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(path));            
         }
 
         public IEnumerable<CategorizedTransaction> Categorize(IEnumerable<Transaction> transactions)
@@ -30,16 +31,22 @@ namespace MoneyCategorizer
             {                
                 var category = GetCategory(transaction);
                 if (category.Equals(WellKnownCategories.Exclude, StringComparison.InvariantCultureIgnoreCase))
+                {
                     continue;
+                }
 
-                if (!aggregate.ContainsKey(category))          
+                if (!aggregate.ContainsKey(category))
+                {
                     aggregate.Add(category, new CategorizedTransaction { Category = category });
+                }
 
                 aggregate[category].Transactions.Add(transaction);
             }
 
-            foreach(var transaction in aggregate.Values)            
+            foreach (var transaction in aggregate.Values)
+            {
                 transaction.Transactions.Sort((x, y) => x.Date.CompareTo(y.Date));
+            }
             
             return aggregate.Values;
         }

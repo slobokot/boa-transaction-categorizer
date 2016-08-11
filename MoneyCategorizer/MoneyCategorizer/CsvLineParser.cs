@@ -27,7 +27,7 @@ namespace MoneyCategorizer
             return result.ToArray();
         }
                              
-        public string GetNext(string s, ref int i)
+        string GetNext(string s, ref int i)
         {
             int b = i;
             int e;

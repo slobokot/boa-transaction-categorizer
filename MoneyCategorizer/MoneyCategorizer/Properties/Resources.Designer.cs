@@ -59,40 +59,5 @@ namespace MoneyCategorizer.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///	&quot;Food&quot; : [
-        ///		&quot;KROGER&quot;,
-        ///		&quot;WAL-MART&quot;,
-        ///		&quot;WM SUPERCENTER&quot;,
-        ///		&quot;KHANS MONGOLIAN GRILL&quot;,
-        ///		&quot;PUBLIX&quot;,
-        ///		&quot;THE GREEK TOUCH NASHVILLE&quot;,
-        ///		&quot;ALEKSEYS MARKET NASHVILLE TN&quot;],
-        ///	&quot;Health&quot; : [
-        ///		&quot;WALGREENS&quot;],
-        ///	&quot;Gas&quot; : [
-        ///		&quot;SHELL OIL&quot;,
-        ///		&quot;EXXONMOBIL&quot;],
-        ///	&quot;Car&quot; : [
-        ///		&quot;ADVANCE AUTO PARTS&quot;],
-        ///	&quot;Restaurant&quot; : [
-        ///	    &quot;MCDONALD&apos;S&quot;
-        ///        &quot;RED LOBSTER&quot;,
-        ///        &quot;STEAK HOUSE&quot;,
-        ///        &quot;LOGANS&quot;],
-        ///	&quot;Baby&quot; : [
-        ///		&quot;GYMBOREE&quot;],
-        ///	&quot;HouseImprovement&quot; : [
-        ///		&quot;TARGET&quot;],                     
-        ///	&quot;Apartment&quot; : [
-        ///		&quot;Arbors [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Categories {
-            get {
-                return ResourceManager.GetString("Categories", resourceCulture);
-            }
-        }
     }
 }
