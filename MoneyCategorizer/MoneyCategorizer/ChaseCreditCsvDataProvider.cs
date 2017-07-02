@@ -22,12 +22,21 @@ namespace MoneyCategorizer
 
             foreach (var line in lines.Skip(1))
             {
-                var s = csvParser.Parse(line);
-
                 var transaction = new Transaction();
-                transaction.Date = DateTime.ParseExact(s[1], "MM/dd/yyyy", CultureInfo.InvariantCulture);
-                transaction.Description = s[3];
-                transaction.Amount = double.Parse(s[4]);
+                try
+                {
+                    var s = csvParser.Parse(line);
+                    
+                    transaction.Date = DateTime.ParseExact(s[1], "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    transaction.Description = s[3];
+                    transaction.Amount = double.Parse(s[4]);
+                    transaction.Raw = line;                    
+                }
+                catch 
+                {
+                    Console.WriteLine($"Failed for line {line}");
+                    throw;
+                }
                 yield return transaction;
             }
 

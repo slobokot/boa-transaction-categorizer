@@ -33,12 +33,19 @@ namespace MoneyCategorizer
                     continue;
                 }
 
-                var transaction = new Transaction
+                var transaction = new Transaction();
+                try
                 {
-                    Date = DateTime.ParseExact(parsed[0], "MM/dd/yyyy", CultureInfo.InvariantCulture),
-                    Description = parsed[1],
-                    Amount = double.Parse(parsed[2])
-                };
+                    transaction.Date = DateTime.ParseExact(parsed[0], "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    transaction.Description = parsed[1];
+                    transaction.Amount = double.Parse(parsed[2]);
+                    transaction.Raw = line;
+                }
+                catch
+                {
+                    Console.WriteLine($"Failed for {line}");
+                    throw;
+                }
                 yield return transaction;
             }
 

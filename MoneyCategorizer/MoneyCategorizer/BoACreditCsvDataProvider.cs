@@ -28,7 +28,8 @@ namespace MoneyCategorizer
                 var transaction = new Transaction {
                     Date = DateTime.ParseExact(s[0], "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     Description = s[2],
-                    Amount = double.Parse(s[4])};
+                    Amount = double.Parse(s[4]),
+                    Raw = line};
 
                 yield return transaction;
             }

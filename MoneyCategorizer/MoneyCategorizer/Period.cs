@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using System;
 
 namespace MoneyCategorizer
 {
     class Period
     {
-        public int Year { get; set; }
-        public int Month { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
     }
 }

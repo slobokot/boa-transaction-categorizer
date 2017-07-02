@@ -1,30 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
 
 namespace MoneyCategorizer
 {
     class FileContentUniqueness
-    {
-        HashSet<string> checkUniqueness = new HashSet<string>();
-
-        public bool IsUnique(string fileContent)
+    {        
+        public void AssertUnique(IEnumerable<Transaction> transactions)
         {
-            var fileStamp = fileContent;
-            if (fileStamp.Length > 300)
-            {
-                fileStamp = fileStamp.Substring(0, 300);
-            }
+            var exemptions = ReadExemptions();
+            var checkUniqueness = new HashSet<string>();
 
-            if (checkUniqueness.Contains(fileStamp))
+            foreach(var transaction in transactions)
             {
-                return false;
+                if (checkUniqueness.Contains(transaction.Raw))
+                {
+                    if (!exemptions.Contains(transaction.Raw))
+                    {
+                        throw new Exception($"{transaction.Raw} is duplicated");
+                    }
+                }
+                else
+                {
+                    checkUniqueness.Add(transaction.Raw);
+                }
             }
+        }
 
-            checkUniqueness.Add(fileStamp);
-            return true;
+        private HashSet<string> ReadExemptions()
+        {
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase), "exemptions.txt").Replace("file:\\", "");
+            var lines = File.ReadAllLines(path);
+            HashSet<string> excemptions = new HashSet<string>();
+            foreach(var line in lines)
+            {
+                excemptions.Add(line.Trim());
+            }
+            return excemptions;
         }
     }
 }

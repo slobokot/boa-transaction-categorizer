@@ -59,6 +59,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RbcCsvDataProvider.cs" />
     <Compile Include="Reporter.cs" />
     <Compile Include="ITransactionProvider.cs" />
     <Compile Include="Program.cs" />
