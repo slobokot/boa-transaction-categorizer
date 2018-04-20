@@ -12,19 +12,28 @@ namespace MoneyCategorizer
             var exemptions = ReadExemptions();
             var checkUniqueness = new HashSet<string>();
 
+            var duplicates = new HashSet<string>();
             foreach(var transaction in transactions)
             {
                 if (checkUniqueness.Contains(transaction.Raw))
                 {
                     if (!exemptions.Contains(transaction.Raw))
                     {
-                        throw new Exception($"{transaction.Raw} is duplicated");
+                        if (!duplicates.Contains(transaction.Raw))
+                        {
+                            duplicates.Add(transaction.Raw);
+                        }                        
                     }
                 }
                 else
                 {
                     checkUniqueness.Add(transaction.Raw);
                 }
+            }
+
+            if (duplicates.Count > 0)
+            {
+                throw new Exception($"There are {duplicates.Count} duplicate transactions\n" + string.Join("\n", duplicates));
             }
         }
 

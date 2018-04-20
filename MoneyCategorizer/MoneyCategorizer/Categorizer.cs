@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Newtonsoft.Json;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MoneyCategorizer
 {
@@ -13,6 +14,7 @@ namespace MoneyCategorizer
     {
         // category -> list of templates
         Dictionary<string, List<string>> categories = new Dictionary<string, List<string>>();
+        Dictionary<string, List<Regex>> regexCategories = new Dictionary<string, List<Regex>>();
 
         public Categorizer()
         {
@@ -21,7 +23,22 @@ namespace MoneyCategorizer
             {
                 throw new Exception($"File {path} does not exist");
             }
-            categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(path));            
+            categories = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(path));
+            foreach(var category in categories)
+            {
+                for(int i = category.Value.Count - 1; i >= 0 ; i--)
+                {
+                    if (category.Value[i].StartsWith("/"))
+                    {
+                        if (!regexCategories.ContainsKey(category.Key))
+                        {
+                            regexCategories.Add(category.Key, new List<Regex>());
+                        }
+                        regexCategories[category.Key].Add(new Regex(category.Value[i].Substring(1), RegexOptions.IgnoreCase));
+                        category.Value.RemoveAt(i);
+                    }
+                }
+            }
         }
 
         public IEnumerable<CategorizedTransaction> Categorize(IEnumerable<Transaction> transactions)
@@ -53,12 +70,24 @@ namespace MoneyCategorizer
 
         private string GetCategory(Transaction transaction)
         {
-            foreach(var categoryList in categories)
+            foreach (var categoryList in categories)
             {
-                foreach(var categoryTemplate in categoryList.Value)
-                if (transaction.Description.ToLower().Contains(categoryTemplate.ToLower()))
+                foreach (var categoryTemplate in categoryList.Value)
                 {
-                    return categoryList.Key;
+                    if (transaction.Description.ToLower().Contains(categoryTemplate.ToLower()))
+                    {
+                        return categoryList.Key;
+                    }
+                }
+            }
+            foreach (var categoryList in regexCategories)
+            {
+                foreach(var categoryRegex in categoryList.Value)
+                {
+                    if (categoryRegex.IsMatch(transaction.Description))
+                    {
+                        return categoryList.Key;
+                    }
                 }
             }
 
