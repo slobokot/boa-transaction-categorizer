@@ -49,6 +49,7 @@
     <Compile Include="BoACreditCsvDataProvider.cs" />
     <Compile Include="CategorizedTransaction.cs" />
     <Compile Include="Categorizer.cs" />
+    <Compile Include="Chase2018CreditCsvDataProvider.cs" />
     <Compile Include="ChaseCreditCsvDataProvider.cs" />
     <Compile Include="CsvLineParser.cs" />
     <Compile Include="DataProviderExtensions.cs" />

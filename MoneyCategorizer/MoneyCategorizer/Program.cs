@@ -54,7 +54,8 @@ namespace MoneyCategorizer
                 new RbcCsvDataProvider(),
                 new BoACreditCsvDataProvider(),
                 new BoADebitCsvDataProvider(),
-                new ChaseCreditCsvDataProvider()
+                new ChaseCreditCsvDataProvider(),
+                new Chase2018CreditCsvDataProvider()
             };
 
             var transactions = new List<Transaction>();
