@@ -55,13 +55,14 @@ namespace MoneyCategorizer
                 new BoACreditCsvDataProvider(),
                 new BoADebitCsvDataProvider(),
                 new ChaseCreditCsvDataProvider(),
-                new Chase2018CreditCsvDataProvider()
+                new Chase2018CreditCsvDataProvider(),
+                new Chase2019CreditCsvDataProvider()
             };
 
             var transactions = new List<Transaction>();
             var fileUniqueness = new FileContentUniqueness();
 
-            foreach (var file in Directory.EnumerateFiles(directory, "*.csv"))
+            foreach (var file in Directory.EnumerateFiles(directory, "*.csv", SearchOption.AllDirectories))
             {
                 try
                 {
