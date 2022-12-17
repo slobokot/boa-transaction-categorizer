@@ -8,7 +8,7 @@ namespace MoneyCategorizer
 {
     interface ITransactionProvider
     {
-        IEnumerable<Transaction> GetTransactions(string fileContent);
+        IEnumerable<Transaction> GetTransactions(string fileContent, string fileName);
         bool FormatSupported(string fileContent);
     }
 }

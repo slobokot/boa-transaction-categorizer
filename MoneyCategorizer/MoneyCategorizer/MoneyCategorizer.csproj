@@ -45,25 +45,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoADebitCsvDataProvider.cs" />
-    <Compile Include="BoACreditCsvDataProvider.cs" />
-    <Compile Include="CategorizedTransaction.cs" />
-    <Compile Include="Categorizer.cs" />
-    <Compile Include="Chase2019CreditCsvDataProvider.cs" />
-    <Compile Include="Chase2018CreditCsvDataProvider.cs" />
-    <Compile Include="ChaseCreditCsvDataProvider.cs" />
+    <Compile Include="DataProvider\BoADebitCsvDataProvider.cs" />
+    <Compile Include="DataProvider\BoACreditCsvDataProvider.cs" />
+    <Compile Include="DataProvider\Chase2022DebitCsvDataProvider .cs" />
+    <Compile Include="FlatCategorizer\CategorizedTransaction.cs" />
+    <Compile Include="FlatCategorizer\CategorizedTransactions.cs" />
+    <Compile Include="FlatCategorizer\Categorizer.cs" />
+    <Compile Include="DataProvider\Chase2019CreditCsvDataProvider.cs" />
+    <Compile Include="DataProvider\Chase2020CreditCsvDataProvider.cs" />
     <Compile Include="CsvLineParser.cs" />
     <Compile Include="DataProviderExtensions.cs" />
     <Compile Include="FileContentUniqueness.cs" />
+    <Compile Include="FlatCategorizer\ManuallySortedTransactions.cs" />
+    <Compile Include="OneElementList.cs" />
     <Compile Include="Period.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RbcCsvDataProvider.cs" />
-    <Compile Include="Reporter.cs" />
-    <Compile Include="ITransactionProvider.cs" />
+    <Compile Include="DataProvider\RbcCsvDataProvider.cs" />
+    <Compile Include="FlatCategorizer\Reporter.cs" />
+    <Compile Include="DataProvider\ITransactionProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
@@ -71,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -84,9 +88,7 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Categories.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Categories.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

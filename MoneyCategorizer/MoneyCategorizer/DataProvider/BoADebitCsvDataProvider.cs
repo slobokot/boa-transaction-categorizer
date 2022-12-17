@@ -18,7 +18,7 @@ namespace MoneyCategorizer
                 fileContent.Contains(transactionStart);
         }
 
-        public IEnumerable<Transaction> GetTransactions(string fileContent)
+        public IEnumerable<Transaction> GetTransactions(string fileContent, string fileName)
         {
             DataProviderExtensions.CheckFormatSupported(this, fileContent);
             var lines = DataProviderExtensions.SplitStringIntoLines(fileContent.Substring(fileContent.IndexOf(transactionStart)));
@@ -40,10 +40,11 @@ namespace MoneyCategorizer
                     transaction.Description = parsed[1];
                     transaction.Amount = double.Parse(parsed[2]);
                     transaction.Raw = line;
+                    transaction.FileName = fileName;
                 }
                 catch
                 {
-                    Console.WriteLine($"Failed for {line}");
+                    Console.WriteLine($"Failed for {line} in file '{fileName}'");
                     throw;
                 }
                 yield return transaction;

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace MoneyCategorizer
 {
-    class Chase2018CreditCsvDataProvider : ITransactionProvider
+    class Chase2019CreditCsvDataProvider : ITransactionProvider
     {
         public bool FormatSupported(string fileContent)
         {
-            return fileContent.StartsWith("Details,Posting Date,Description,Amount,Type,Balance,Check or Slip #");
+            return fileContent.StartsWith("Transaction Date,Post Date,Description,Category,Type,Amount");
         }
 
-        public IEnumerable<Transaction> GetTransactions(string fileContent)
+        public IEnumerable<Transaction> GetTransactions(string fileContent, string fileName)
         {
             DataProviderExtensions.CheckFormatSupported(this, fileContent);
             var lines = DataProviderExtensions.SplitStringIntoLines(fileContent);
@@ -27,14 +27,15 @@ namespace MoneyCategorizer
                 {
                     var s = csvParser.Parse(line);
                     
-                    transaction.Date = DateTime.ParseExact(s[1], "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    transaction.Date = DateTime.ParseExact(s[0], "MM/dd/yyyy", CultureInfo.InvariantCulture);
                     transaction.Description = s[2];
-                    transaction.Amount = double.Parse(s[3]);
-                    transaction.Raw = line;                    
+                    transaction.Amount = double.Parse(s[5]);
+                    transaction.Raw = line;
+                    transaction.FileName = fileName;               
                 }
                 catch 
                 {
-                    Console.WriteLine($"Failed for line {line}");
+                    Console.WriteLine($"Failed for line {line} in file '{fileName}'");
                     throw;
                 }
                 yield return transaction;

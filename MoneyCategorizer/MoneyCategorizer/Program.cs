@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoneyCategorizer.FlatCategorizer;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,12 @@ namespace MoneyCategorizer
 
                 var transactions = ReadAllTransactionsFromDirectory(directory);
                 var periods = GetPeriods();
-                periods.ForEach(period => Run(transactions, period));
+                var manually = new ManuallySortedTransactions();
+                manually.Load(directory);
+                var categorizer = new Categorizer(directory, manually);
+                var categorized = categorizer.Categorize2(transactions);
+                periods.ForEach(period => new Reporter().Report(Filter(categorized, period), period, directory));
+                manually.Save(directory, categorized);
             }
             catch (Exception e)
             {
@@ -31,7 +37,7 @@ namespace MoneyCategorizer
             var periods = new List<Period>();
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 13; i++)
             {
                 DateTime from = new DateTime(now.Year, now.Month, 1);
                 DateTime to = from.AddMonths(1);
@@ -40,12 +46,11 @@ namespace MoneyCategorizer
             }
 
             periods.Add(new Period { From = new DateTime(DateTime.Now.Year, 1, 1), To = new DateTime(DateTime.Now.Year + 1, 1, 1) });
-            if (DateTime.Now.Month <= 2)
-            {
-                periods.Add(new Period { From = new DateTime(DateTime.Now.Year - 1, 1, 1), To = new DateTime(DateTime.Now.Year, 1, 1) });
-            }
+            periods.Add(new Period { From = new DateTime(DateTime.Now.Year - 1, 1, 1), To = new DateTime(DateTime.Now.Year, 1, 1) });
+
 
             return periods;
+            //return new List<Period>() { new Period { From = new DateTime(2022, 9, 1), To = new DateTime(2022, 10, 1) } };
         }
 
         static IEnumerable<Transaction> ReadAllTransactionsFromDirectory(string directory)
@@ -53,27 +58,25 @@ namespace MoneyCategorizer
             var dataProviders = new ITransactionProvider[] {
                 new RbcCsvDataProvider(),
                 new BoACreditCsvDataProvider(),
-                new BoADebitCsvDataProvider(),
-                new ChaseCreditCsvDataProvider(),
-                new Chase2018CreditCsvDataProvider(),
+                new BoADebitCsvDataProvider(),                
+                new Chase2022DebitCsvDataProvider(),
+                new Chase2020CreditCsvDataProvider(),                
                 new Chase2019CreditCsvDataProvider()
             };
 
             var transactions = new List<Transaction>();
             var fileUniqueness = new FileContentUniqueness();
 
-            foreach (var file in Directory.EnumerateFiles(directory, "*.csv", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(Path.Combine(directory,"bank"), "*.csv", SearchOption.AllDirectories))
             {
                 try
                 {
                     var fileContent = File.ReadAllText(file);
 
                     var dataProvider = (from x in dataProviders where x.FormatSupported(fileContent) select x).ToList();
-                    if (dataProvider.Count != 1)
-                    {
-                        throw new Exception($"{file} format is not supported");
-                    }
-                    transactions.AddRange(dataProvider[0].GetTransactions(fileContent));
+                    if (dataProvider.Count != 1) throw new Exception($"For '{file}' need 1 data provider, but found: " + String.Join(",", dataProvider.Select(a=>a.GetType().Name)));
+                                        
+                    transactions.AddRange(dataProvider[0].GetTransactions(fileContent, file));
                 }
                 catch
                 {
@@ -82,25 +85,15 @@ namespace MoneyCategorizer
                 }
             }
 
-            fileUniqueness.AssertUnique(transactions);
+            fileUniqueness.AssertUnique(transactions, Path.Combine(directory, "user", "exemptions.txt"));
 
             return transactions;
         }
 
-        static void Run(IEnumerable<Transaction> transactions, Period period)
-        {
-            var filteredTransactions = Filter(transactions, period);
-
-            var categorizer = new Categorizer();
-            var categorized = categorizer.Categorize(filteredTransactions);
-
-            Reporter.Report(categorized, period);
-        }
-
-        static IEnumerable<Transaction> Filter(IEnumerable<Transaction> transactions, Period period)
+        static IEnumerable<CategorizedTransaction> Filter(IEnumerable<CategorizedTransaction> transactions, Period period)
         {
             return from t in transactions
-                   where (period.From <= t.Date && t.Date < period.To)
+                   where (period.From <= t.Transaction.Date && t.Transaction.Date < period.To)
                    select t;
         }
     }

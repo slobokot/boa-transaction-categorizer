@@ -15,7 +15,7 @@ namespace MoneyCategorizer
             return fileContent.StartsWith("Posted Date,Reference Number,Payee,Address,Amount");
         }
 
-        public IEnumerable<Transaction> GetTransactions(string fileContent)
+        public IEnumerable<Transaction> GetTransactions(string fileContent, string fileName)
         {
             DataProviderExtensions.CheckFormatSupported(this, fileContent);
             var lines = DataProviderExtensions.SplitStringIntoLines(fileContent);            
@@ -29,7 +29,9 @@ namespace MoneyCategorizer
                     Date = DateTime.ParseExact(s[0], "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     Description = s[2],
                     Amount = double.Parse(s[4]),
-                    Raw = line};
+                    Raw = line,
+                    FileName = fileName
+                };
 
                 yield return transaction;
             }
