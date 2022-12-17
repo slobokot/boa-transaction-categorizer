@@ -1,0 +1,3 @@
+how to clone this shit:
+
+git remote set-url origin https://user:token@github.com/slobokot/boa-transaction-categorizer
