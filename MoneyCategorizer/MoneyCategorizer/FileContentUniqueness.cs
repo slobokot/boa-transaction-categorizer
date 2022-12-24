@@ -7,32 +7,37 @@ namespace MoneyCategorizer
 {
     class FileContentUniqueness
     {        
-        public void AssertUnique(IEnumerable<Transaction> transactions, string exemptionFileName = null)
+        class Merger
         {
-            var exemptions = ReadExemptions(exemptionFileName);
-            var checkUniqueness = new Dictionary<string, List<string>>();
+            public List<Transaction> Transactions;                     
 
-            var duplicates = new Dictionary<string, List<string>>();
+            public Merger(Transaction oldTransaction)
+            {
+                Transactions = new List<Transaction>();
+                Transactions.Add(oldTransaction);                                
+            }
+        }
+
+        public IEnumerable<Transaction> HandleNonUniqueCases(IEnumerable<Transaction> transactions, string exemptionFileName = null)
+        {            
+            var exemptions = ReadExemptions(exemptionFileName);
+            var rawToMerger = new Dictionary<string, Merger>();
+
+            var duplicates = new Dictionary<string, Merger>();
             foreach(var transaction in transactions)
             {
-                if (checkUniqueness.ContainsKey(transaction.Raw))
+                if (rawToMerger.ContainsKey(transaction.Raw))
                 {
-                    if (!exemptions.Contains(transaction.Raw))
-                    {
-                        if (!duplicates.ContainsKey(transaction.Raw))
-                        {
-                            duplicates.Add(transaction.Raw, new List<string>());
-                        }
-                        duplicates[transaction.Raw].Add(transaction.FileName);
-                        duplicates[transaction.Raw].AddRange(checkUniqueness[transaction.Raw]);
+                    rawToMerger[transaction.Raw].Transactions.Add(transaction);
+                    if (!exemptions.Contains(transaction.Raw) && !duplicates.ContainsKey(transaction.Raw))
+                    {                    
+                        duplicates.Add(transaction.Raw, rawToMerger[transaction.Raw]);                        
                     }
                 }
                 else
-                {
-                    var list = new List<string>();
-                    list.Add(transaction.FileName);
-                    checkUniqueness.Add(transaction.Raw, list);
-                }
+                {                    
+                    rawToMerger.Add(transaction.Raw, new Merger(transaction));
+                }                
             }
 
             if (duplicates.Count > 0)
@@ -40,24 +45,46 @@ namespace MoneyCategorizer
                 foreach(var entry in duplicates)
                 {
                     Console.WriteLine(entry.Key);
-                    foreach(var file in entry.Value)
+                    foreach(var tx in entry.Value.Transactions)
                     {
-                        Console.WriteLine("    " + file);
+                        Console.WriteLine("    " + tx.FileName);
                     }
                 }
                 throw new Exception($"There are {duplicates.Count} duplicate transactions\n");
             }
+            var result = new List<Transaction>();
+            foreach(var merger in rawToMerger)
+            {                
+                var i = 1;
+                foreach (var tx in merger.Value.Transactions)
+                {
+                    if (i == 1)
+                        result.Add(merger.Value.Transactions[0]);
+                    else
+                    {
+                        var newtx = new Transaction();
+                        newtx.Amount = tx.Amount;
+                        newtx.Date = tx.Date;
+                        newtx.Description = tx.Description;
+                        newtx.FileName = tx.FileName;
+                        newtx.Raw = $"{tx.Raw}[{i}]";
+                        result.Add(newtx);
+                    }
+                    i++;
+                }                
+            }
+            return result;
         }
 
         private HashSet<string> ReadExemptions(string exemptionFileName = null)
         {            
             var lines = File.ReadAllLines(exemptionFileName);
-            HashSet<string> excemptions = new HashSet<string>();
+            HashSet<string> exemption = new HashSet<string>();
             foreach(var line in lines)
             {
-                excemptions.Add(line.Trim());
+                exemption.Add(line.Trim());
             }
-            return excemptions;
+            return exemption;
         }
     }
 }

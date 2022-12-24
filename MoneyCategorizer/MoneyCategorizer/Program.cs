@@ -16,8 +16,7 @@ namespace MoneyCategorizer
             {                
                 var directory = args.Length > 0 ? args[0] : ".";                
 
-                var transactions = ReadAllTransactionsFromDirectory(directory);
-                Console.WriteLine($"Loaded {transactions.Count()} transactions from {directory}");
+                var transactions = ReadAllTransactionsFromDirectory(directory);                
 
                 var categorizer = new Categorizer(directory);
                 var categorized = categorizer.Categorize2(transactions);
@@ -89,9 +88,13 @@ namespace MoneyCategorizer
                 }
             }
 
-            fileUniqueness.AssertUnique(transactions, Path.Combine(directory, "user", "exemptions.txt"));
+            Console.WriteLine($"Loaded {transactions.Count()} transactions from {directory}");
 
-            return transactions;
+            var merged = fileUniqueness.HandleNonUniqueCases(transactions, Path.Combine(directory, "user", "exemptions.txt"));
+
+            Console.WriteLine($"Merged non unique and got {merged.Count()} transactions");
+
+            return merged;
         }
 
         static IEnumerable<SortedTransaction> Filter(IEnumerable<SortedTransaction> transactions, Period period)

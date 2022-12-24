@@ -112,7 +112,10 @@ namespace MoneyCategorizer.FlatCategorizer
         {
             var result = new List<SortedTransaction>();
             result.AddRange(existing);
-            
+            var newRawToId = new Dictionary<string, string>();
+            foreach (var entry in rawToId)
+                newRawToId.Add(entry.Key, entry.Value);
+
             var monthToTrans = new Dictionary<string, List<SortedTransaction>>();// date - list<categorized>
             foreach (var ct in 
                 cts.Where(x => !rawToId.ContainsKey(x.Transaction.Raw))
@@ -128,7 +131,7 @@ namespace MoneyCategorizer.FlatCategorizer
                 sortedTransaction.Date = ct.Transaction.Date;
                 sortedTransaction.Description = ct.Transaction.Description +
                     (!string.IsNullOrWhiteSpace(ct.ExtraDescription) ? (' ' + ct.ExtraDescription) : string.Empty);
-                sortedTransaction.Id = GetId(ct, rawToId);
+                sortedTransaction.Id = GetId(ct, newRawToId);
 
                 monthToTrans[date].Add(sortedTransaction);
                 result.Add(sortedTransaction);
@@ -156,7 +159,7 @@ namespace MoneyCategorizer.FlatCategorizer
 
             using (StreamWriter sw = new StreamWriter(GetIdsFileName(root)))
             {
-                foreach (var entry in from x in rawToId orderby x.Value select x)
+                foreach (var entry in from x in newRawToId orderby x.Value select x)
                 {
                     sw.WriteLine(entry.Value + "=" + entry.Key);
                 }
@@ -171,8 +174,7 @@ namespace MoneyCategorizer.FlatCategorizer
         }
 
         private string GetId(CategorizedTransaction ct, Dictionary<string, string> rawToId)
-        {
-            
+        {           
             if (!rawToId.ContainsKey(ct.Transaction.Raw))
             {
                 string newIdStr;
