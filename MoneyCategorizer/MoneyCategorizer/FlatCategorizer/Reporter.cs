@@ -14,9 +14,9 @@ namespace MoneyCategorizer
         double totalSpending = double.NaN;
         double totalIncome = double.NaN;
 
-        public void Report(IEnumerable<CategorizedTransaction> categorized, Period period, string root)
+        public void Report(IEnumerable<SortedTransaction> categorized, Period period, string root)
         {
-            var sorted = CategorizedTransactions.From(categorized);
+            var sorted = ReportTransactions.From(categorized);
             string filename;
             
             if ((period.To - period.From).TotalDays < 32)
@@ -36,7 +36,7 @@ namespace MoneyCategorizer
             }
         }
 
-        private void PreCalculateNumbers(IEnumerable<CategorizedTransactions> categorized)
+        private void PreCalculateNumbers(IEnumerable<ReportTransactions> categorized)
         {
             total = 0.0;
             totalSpending = 0.0;
@@ -53,7 +53,7 @@ namespace MoneyCategorizer
             }
         }
 
-        private void PrintSummary(IEnumerable<CategorizedTransactions> categorized, TextWriter sw)
+        private void PrintSummary(IEnumerable<ReportTransactions> categorized, TextWriter sw)
         {
             sw.WriteLine("--------------------------------");
             
@@ -67,12 +67,12 @@ namespace MoneyCategorizer
             sw.WriteLine($"Total saving\t{(totalIncome+totalSpending).ToString("0.00")}");
         }
 
-        private double percentage(CategorizedTransactions category)
+        private double percentage(ReportTransactions category)
         {
             return category.Amount * 100 / (category.Amount < 0 ? totalSpending : totalIncome);
         }
 
-        private void PrintDetailed(IEnumerable<CategorizedTransactions> categorized, TextWriter sw)
+        private void PrintDetailed(IEnumerable<ReportTransactions> categorized, TextWriter sw)
         {
             sw.WriteLine("--------------------------------");
             foreach (var category in from c in categorized orderby c.Amount select c)

@@ -11,19 +11,24 @@ namespace MoneyCategorizer
     class Program
     {
         static void Main(string[] args)
-        {
+        {            
             try
-            {
-                var directory = args.Length > 0 ? args[0] : ".";
+            {                
+                var directory = args.Length > 0 ? args[0] : ".";                
 
                 var transactions = ReadAllTransactionsFromDirectory(directory);
-                var periods = GetPeriods();
-                var manually = new ManuallySortedTransactions();
-                manually.Load(directory);
-                var categorizer = new Categorizer(directory, manually);
+                Console.WriteLine($"Loaded {transactions.Count()} transactions from {directory}");
+
+                var categorizer = new Categorizer(directory);
                 var categorized = categorizer.Categorize2(transactions);
-                periods.ForEach(period => new Reporter().Report(Filter(categorized, period), period, directory));
-                manually.Save(directory, categorized);
+                Console.WriteLine($"Categorized {categorized.Count()} transactions");
+
+                var manually = new ManuallySortedTransactions2();
+                var sorted = manually.LoadAndAddNew(directory, categorized);
+                Console.WriteLine($"Merged with existing transactions and got {sorted.Count()} transactions");
+
+                var periods = GetPeriods();
+                periods.ForEach(period => new Reporter().Report(Filter(sorted, period), period, directory));                
             }
             catch (Exception e)
             {
@@ -37,7 +42,7 @@ namespace MoneyCategorizer
             var periods = new List<Period>();
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
-            for (int i = 0; i < 13; i++)
+            for (int i = 0; i < 12; i++)
             {
                 DateTime from = new DateTime(now.Year, now.Month, 1);
                 DateTime to = from.AddMonths(1);
@@ -49,8 +54,7 @@ namespace MoneyCategorizer
             periods.Add(new Period { From = new DateTime(DateTime.Now.Year - 1, 1, 1), To = new DateTime(DateTime.Now.Year, 1, 1) });
 
 
-            return periods;
-            //return new List<Period>() { new Period { From = new DateTime(2022, 9, 1), To = new DateTime(2022, 10, 1) } };
+            return periods;            
         }
 
         static IEnumerable<Transaction> ReadAllTransactionsFromDirectory(string directory)
@@ -90,10 +94,10 @@ namespace MoneyCategorizer
             return transactions;
         }
 
-        static IEnumerable<CategorizedTransaction> Filter(IEnumerable<CategorizedTransaction> transactions, Period period)
+        static IEnumerable<SortedTransaction> Filter(IEnumerable<SortedTransaction> transactions, Period period)
         {
             return from t in transactions
-                   where (period.From <= t.Transaction.Date && t.Transaction.Date < period.To)
+                   where (period.From <= t.Date && t.Date < period.To)
                    select t;
         }
     }

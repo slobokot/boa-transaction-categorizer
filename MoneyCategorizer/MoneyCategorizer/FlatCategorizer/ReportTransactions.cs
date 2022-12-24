@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace MoneyCategorizer
 {
-    class CategorizedTransactions
+    class ReportTransactions
     {
         public string Category { get; set; }
-        public List<Transaction> Transactions { get; } = new List<Transaction>();
+        public List<SortedTransaction> Transactions { get; } = new List<SortedTransaction>();
 
-        public static IEnumerable<CategorizedTransactions> From(IEnumerable<CategorizedTransaction> transactions)
+        public static IEnumerable<ReportTransactions> From(IEnumerable<SortedTransaction> transactions)
         {
-            var aggregate = new Dictionary<string, CategorizedTransactions>();
+            var aggregate = new Dictionary<string, ReportTransactions>();
             foreach (var transaction in transactions)
             {
                 var category = transaction.Category;
@@ -25,10 +25,10 @@ namespace MoneyCategorizer
 
                 if (!aggregate.ContainsKey(category))
                 {
-                    aggregate.Add(category, new CategorizedTransactions { Category = category });
+                    aggregate.Add(category, new ReportTransactions { Category = category });
                 }
 
-                aggregate[category].Transactions.Add(transaction.Transaction);
+                aggregate[category].Transactions.Add(transaction);
             }
 
             foreach (var transaction in aggregate.Values)

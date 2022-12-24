@@ -9,6 +9,7 @@ namespace MoneyCategorizer.FlatCategorizer
     public class CategorizedTransaction
     {
         public Transaction Transaction { get;set; }
-        public string Category { get; set; }        
+        public string Category { get; set; }       
+        public string ExtraDescription { get; set; } 
     }
 }

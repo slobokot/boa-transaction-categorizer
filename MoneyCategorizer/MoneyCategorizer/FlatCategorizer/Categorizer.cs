@@ -16,12 +16,10 @@ namespace MoneyCategorizer
     {
         // category -> list of templates
         Dictionary<string, List<string>> categories = new Dictionary<string, List<string>>();
-        Dictionary<string, List<Regex>> regexCategories = new Dictionary<string, List<Regex>>();
-        ManuallySortedTransactions manuallySortedTransactions;
+        Dictionary<string, List<Regex>> regexCategories = new Dictionary<string, List<Regex>>();        
 
-        public Categorizer(string root, ManuallySortedTransactions manuallySortedTransactions)
-        {
-            this.manuallySortedTransactions = manuallySortedTransactions;
+        public Categorizer(string root)
+        {            
             var path = Path.Combine(root, "user", "Categories.json");
             if (!File.Exists(path))
             {
@@ -49,33 +47,16 @@ namespace MoneyCategorizer
         {
             var result = new List<CategorizedTransaction>();
             foreach (var transaction in transactions)
-            {                
-                var toAdd = manuallySortedTransactions.GetCategory(transaction);
-                int count = 0;
-                foreach (var categorized in toAdd)
+            {                                                                
+                var toAdd = new CategorizedTransaction{ Transaction = transaction, Category = GetCategory(transaction) };
+                
+                if (!toAdd.Category.Equals(WellKnownCategories.Exclude, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    add(categorized, result);
-                    count++;
+                    result.Add(toAdd);
                 }
-                if (count == 0)
-                {
-                    add(new CategorizedTransaction
-                    {
-                        Transaction = transaction,
-                        Category = GetCategory(transaction)
-                    }, result);
-                }                
             }
 
             return result;
-        }
-
-        private void add(CategorizedTransaction transaction, List<CategorizedTransaction> list)
-        {
-            if (!transaction.Category.Equals(WellKnownCategories.Exclude, StringComparison.InvariantCultureIgnoreCase))
-            {
-                list.Add(transaction);
-            }
         }
 
         private string GetCategory(Transaction transaction)
